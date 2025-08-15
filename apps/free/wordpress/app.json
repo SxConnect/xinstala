@@ -1,0 +1,18 @@
+{
+  "id": "wordpress",
+  "name": "WordPress",
+  "description": "Crie sites, blogs e lojas com o CMS mais usado do mundo.",
+  "version": "6.8.2",
+  "category": "Website",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["site", "blog", "cms", "loja"],
+  "author": "Comunidade XPanel",
+  "website": "https://wordpress.org",
+  "locales": {
+    "pt-br": {
+      "name": "WordPress",
+      "description": "Crie sites, blogs e lojas com o CMS mais usado do mundo."
+    }
+  }
+}

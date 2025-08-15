@@ -1,35 +1,57 @@
 name: WordPress
-tags:
-    - 建站
-title: 著名的开源博客软件和 CMS 系统
-description: 著名的开源博客软件和 CMS 系统
-additionalProperties:
-    key: wordpress
-    name: WordPress
-    tags:
-        - Website
-    shortDescZh: 著名的开源博客软件和 CMS 系统
-    shortDescEn: Open source blogging software and content management system
-    description:
-        en: Open source blogging software and content management system
-        ja: オープンソースのブログソフトウェアおよびコンテンツ管理システム
-        ms: Perisian blog dan sistem pengurusan kandungan sumber terbuka
-        pt-br: Software de blog de código aberto e sistema de gerenciamento de conteúdo
-        ru: Программное обеспечение для блогов с открытым исходным кодом и система управления контентом
-        ko: 오픈 소스 블로깅 소프트웨어 및 콘텐츠 관리 시스템
-        zh-hant: 開源的博客軟體與內容管理系統
-        zh: 著名的开源博客软件和 CMS 系统
-    type: website
-    crossVersionUpdate: true
-    limit: 0
-    recommend: 25
-    website: https://wordpress.org/
-    github: https://github.com/WordPress/WordPress
-    document: https://cn.wordpress.org/support/
-    architectures:
-      - amd64
-      - arm/v5
-      - arm/v7
-      - arm64
-      - ppc64le
-      - s390x
+version: 6.8.2
+description: Crie sites, blogs e lojas com o CMS mais usado do mundo.
+author: Comunidade XPanel
+website: https://wordpress.org
+categories:
+  - Website
+icon: https://raw.githubusercontent.com/SxConnect/xinstala/main/apps/free/wordpress/icon.png
+docker:
+  compose:
+    version: '3.8'
+    services:
+      db:
+        image: mariadb:10.11
+        container_name: ${APP_NAME}_db
+        environment:
+          MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+          MYSQL_DATABASE: ${MYSQL_DATABASE}
+          MYSQL_USER: ${MYSQL_USER}
+          MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        volumes:
+          - ${DATA_DIR}/db:/var/lib/mysql
+        command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+        networks:
+          - ${NETWORK}
+        restart: unless-stopped
+
+      wordpress:
+        image: wordpress:latest
+        container_name: ${APP_NAME}_app
+        depends_on:
+          - db
+        environment:
+          WORDPRESS_DB_HOST: db:3306
+          WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+          WORDPRESS_DB_USER: ${MYSQL_USER}
+          WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+          WORDPRESS_TABLE_PREFIX: wp_
+        volumes:
+          - ${DATA_DIR}/wordpress:/var/www/html
+        networks:
+          - ${NETWORK}
+        restart: unless-stopped
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.${APP_NAME}.rule=Host(`${DOMAIN}`)"
+          - "traefik.http.routers.${APP_NAME}.entrypoints=websecure"
+          - "traefik.http.routers.${APP_NAME}.tls=true"
+          - "traefik.http.services.${APP_NAME}.loadbalancer.server.port=80"
+          - "traefik.docker.network=${NETWORK}"
+networks:
+  default:
+    name: ${NETWORK}
+    external: false
+volumes:
+  db: null
+  wordpress: null
