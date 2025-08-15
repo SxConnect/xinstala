@@ -1,0 +1,65 @@
+name: Directus
+version: 10.15.0
+description: Plataforma headless de dados com painel administrativo e API REST/GraphQL.
+author: Comunidade XPanel
+website: https://directus.io
+categories:
+  - DevTool
+icon: https://raw.githubusercontent.com/SxConnect/xinstala/main/apps/free/directus/icon.png
+docker:
+  compose:
+    version: '3.8'
+    services:
+      directus:
+        image: directus/directus:latest
+        restart: unless-stopped
+        environment:
+          - KEY=${APP_KEY}
+          - SECRET=${APP_SECRET}
+          - ADMIN_EMAIL=${ADMIN_EMAIL}
+          - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+          - DB_CLIENT=pg
+          - DB_HOST=postgres
+          - DB_PORT=5432
+          - DB_DATABASE=${POSTGRES_DB}
+          - DB_USER=${POSTGRES_USER}
+          - DB_PASSWORD=${POSTGRES_PASSWORD}
+          - DB_POOL_MIN=2
+          - DB_POOL_MAX=20
+          - STORAGE_LOCAL_DRIVER=local
+          - STORAGE_LOCAL_ROOT=/directus/uploads
+          - STORAGE_LOCAL_ENDPOINT=${DOMAIN_STORAGE}
+          - RATE_LIMITER_ENABLED=true
+          - RATE_LIMITER_POINTS=60
+          - RATE_LIMITER_DURATION=60
+        volumes:
+          - ${DATA_DIR}/uploads:/directus/uploads
+        depends_on:
+          - postgres
+        networks:
+          - ${NETWORK}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.${APP_NAME}.rule=Host(`${DOMAIN}`)"
+          - "traefik.http.routers.${APP_NAME}.entrypoints=websecure"
+          - "traefik.http.routers.${APP_NAME}.tls.certresolver=leresolver"
+          - "traefik.http.services.${APP_NAME}.loadbalancer.server.port=8055"
+          - "traefik.docker.network=${NETWORK}"
+      postgres:
+        image: postgres:15
+        restart: unless-stopped
+        environment:
+          POSTGRES_USER: ${POSTGRES_USER}
+          POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+          POSTGRES_DB: ${POSTGRES_DB}
+        volumes:
+          - ${DATA_DIR}/postgres:/var/lib/postgresql/data
+        networks:
+          - ${NETWORK}
+    volumes:
+      postgres_data: null
+      uploads: null
+networks:
+  default:
+    name: ${NETWORK}
+    external: true

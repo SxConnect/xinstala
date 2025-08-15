@@ -1,0 +1,18 @@
+{
+  "id": "directus",
+  "name": "Directus",
+  "description": "Plataforma headless de dados com painel administrativo e API REST/GraphQL.",
+  "version": "10.15.0",
+  "category": "Ferramentas de Dev",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["cms", "api", "headless", "banco de dados", "painel"],
+  "author": "Comunidade XPanel",
+  "website": "https://directus.io",
+  "locales": {
+    "pt-br": {
+      "name": "Directus",
+      "description": "Plataforma headless de dados com painel administrativo e API REST/GraphQL."
+    }
+  }
+}
