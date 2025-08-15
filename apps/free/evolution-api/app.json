@@ -1,0 +1,18 @@
+{
+  "id": "evolution-api",
+  "name": "Evolution API 2.0",
+  "description": "API para integração com WhatsApp, com suporte a MinIO, RabbitMQ, Postgres e Redis.",
+  "version": "2.0.10",
+  "category": "Comunicação",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["whatsapp", "api", "comunicação", "automação", "mensagens"],
+  "author": "Comunidade XPanel",
+  "website": "https://evolution-api.com",
+  "locales": {
+    "pt-br": {
+      "name": "Evolution API 2.0",
+      "description": "API para integração com WhatsApp, com suporte a MinIO, RabbitMQ, Postgres e Redis."
+    }
+  }
+}

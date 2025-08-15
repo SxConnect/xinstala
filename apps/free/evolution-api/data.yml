@@ -1,0 +1,160 @@
+name: Evolution API 2.0
+version: 2.0.10
+description: API para integração com WhatsApp, com suporte a MinIO, RabbitMQ, Postgres e Redis.
+author: Comunidade XPanel
+website: https://evolution-api.com
+categories:
+  - Comunicação
+icon: https://raw.githubusercontent.com/SxConnect/xinstala/main/apps/free/evolution-api/icon.png
+docker:
+  compose:
+    version: '3.8'
+    services:
+      evolution_v2:
+        image: atendai/evolution-api:v2.0.10
+        restart: always
+        depends_on:
+          - evo_redis
+          - evo_postgres
+        volumes:
+          - ${DATA_DIR}/instances:/evolution/instances
+        networks:
+          - ${NETWORK}
+        environment:
+          - AUTHENTICATION_API_KEY=${AUTHENTICATION_API_KEY}
+          - AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES=true
+          - CACHE_LOCAL_ENABLED=false
+          - CACHE_REDIS_ENABLED=true
+          - CACHE_REDIS_PREFIX_KEY=evolution_v2
+          - CACHE_REDIS_SAVE_INSTANCES=false
+          - CACHE_REDIS_URI=redis://evo_redis:6379/1
+          - CHATWOOT_ENABLED=false
+          - CHATWOOT_IMPORT_DATABASE_CONNECTION_URI=${CHATWOOT_DB_URI}
+          - CHATWOOT_IMPORT_PLACEHOLDER_MEDIA_MESSAGE=true
+          - CHATWOOT_MESSAGE_DELETE=true
+          - CHATWOOT_MESSAGE_READ=true
+          - DATABASE_CONNECTION_CLIENT_NAME=evolution_v2
+          - DATABASE_CONNECTION_URI=postgresql://postgres:${POSTGRES_PASSWORD}@evo_postgres:5432/evolution
+          - DATABASE_ENABLED=true
+          - DATABASE_PROVIDER=postgresql
+          - DATABASE_SAVE_DATA_CHATS=true
+          - DATABASE_SAVE_DATA_CONTACTS=true
+          - DATABASE_SAVE_DATA_HISTORIC=true
+          - DATABASE_SAVE_DATA_INSTANCE=true
+          - DATABASE_SAVE_DATA_LABELS=true
+          - DATABASE_SAVE_DATA_NEW_MESSAGE=true
+          - DATABASE_SAVE_MESSAGE_UPDATE=true
+          - DEL_INSTANCE=false
+          - DIFY_ENABLED=true
+          - LANGUAGE=pt-br
+          - LOG_BAILEYS=error
+          - LOG_LEVEL=ERROR
+          - OPENAI_ENABLED=true
+          - QRCODE_COLOR=#175197
+          - QRCODE_LIMIT=30
+          - RABBITMQ_ENABLED=true
+          - RABBITMQ_GLOBAL_ENABLED=true
+          - RABBITMQ_URI=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672/rabbitmq
+          - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+          - S3_BUCKET=evolution
+          - S3_ENABLED=true
+          - S3_ENDPOINT=${S3_ENDPOINT}
+          - S3_PORT=443
+          - S3_SECRET_KEY=${S3_SECRET_KEY}
+          - S3_USE_SSL=true
+          - SERVER_URL=https://${DOMAIN_API}
+          - SQS_ENABLED=false
+          - TELEMETRY=false
+          - TYPEBOT_API_VERSION=latest
+          - TYPEBOT_ENABLE=true
+          - WEBSOCKET_ENABLED=true
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.evolution_v2.rule=Host(`${DOMAIN_API}`)"
+          - "traefik.http.routers.evolution_v2.entrypoints=websecure"
+          - "traefik.http.routers.evolution_v2.tls.certresolver=leresolver"
+          - "traefik.http.services.evolution_v2.loadbalancer.server.port=8080"
+          - "traefik.docker.network=${NETWORK}"
+
+      evo_postgres:
+        image: postgres:14
+        restart: always
+        environment:
+          - POSTGRES_DB=evolution
+          - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        volumes:
+          - ${DATA_DIR}/postgres:/var/lib/postgresql/data
+        networks:
+          - ${NETWORK}
+
+      evo_redis:
+        image: redis:latest
+        restart: always
+        volumes:
+          - ${DATA_DIR}/redis:/data
+        command: redis-server
+        healthcheck:
+          test: ["CMD", "redis-cli", "ping"]
+        networks:
+          - ${NETWORK}
+
+      evo_minio:
+        image: quay.io/minio/minio:RELEASE.2024-03-26T22-10-45Z
+        restart: always
+        command: server /data --console-address ":9001"
+        volumes:
+          - ${DATA_DIR}/minio:/data
+        networks:
+          - ${NETWORK}
+        environment:
+          - MINIO_ROOT_USER=${MINIO_USER}
+          - MINIO_ROOT_PASSWORD=${MINIO_PASS}
+          - MINIO_BROWSER_REDIRECT_URL=https://${DOMAIN_STORAGE}
+          - MINIO_SERVER_URL=https://${DOMAIN_S3}
+          - MINIO_VOLUMES=/data
+          - CONSOLE_MINIO_SERVER=https://${DOMAIN_S3}
+          - MINIO_OPTS=--console-address=":9001"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.minio_public.rule=Host(`${DOMAIN_S3}`)"
+          - "traefik.http.routers.minio_public.entrypoints=websecure"
+          - "traefik.http.routers.minio_public.tls.certresolver=leresolver"
+          - "traefik.http.services.minio_public.loadbalancer.server.port=9000"
+          - "traefik.docker.network=${NETWORK}"
+          - "traefik.http.routers.minio_console.rule=Host(`${DOMAIN_STORAGE}`)"
+          - "traefik.http.routers.minio_console.entrypoints=websecure"
+          - "traefik.http.routers.minio_console.tls.certresolver=leresolver"
+          - "traefik.http.services.minio_console.loadbalancer.server.port=9001"
+          - "traefik.docker.network=${NETWORK}"
+
+      rabbitmq:
+        image: rabbitmq:management
+        restart: always
+        command: rabbitmq-server
+        hostname: rabbitmq
+        volumes:
+          - ${DATA_DIR}/rabbitmq:/var/lib/rabbitmq
+        networks:
+          - ${NETWORK}
+        environment:
+          - RABBITMQ_ERLANG_COOKIE=${RABBITMQ_COOKIE}
+          - RABBITMQ_DEFAULT_VHOST=rabbitmq
+          - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+          - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.rabbitmq.rule=Host(`${DOMAIN_RABBITMQ}`)"
+          - "traefik.http.routers.rabbitmq.entrypoints=websecure"
+          - "traefik.http.routers.rabbitmq.tls.certresolver=leresolver"
+          - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+          - "traefik.docker.network=${NETWORK}"
+    volumes:
+      instances: null
+      postgres: null
+      redis: null
+      minio: null
+      rabbitmq: null
+networks:
+  default:
+    name: ${NETWORK}
+    external: true
