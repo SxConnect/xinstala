@@ -1,0 +1,18 @@
+{
+  "id": "mautic",
+  "name": "Mautic",
+  "description": "Plataforma de automação de marketing open source para campanhas de email, landing pages e jornadas de relacionamento.",
+  "version": "4.5.0",
+  "category": "Marketing",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["marketing", "email", "automação", "campanha", "landing page"],
+  "author": "Comunidade XPanel",
+  "website": "https://mautic.org",
+  "locales": {
+    "pt-br": {
+      "name": "Mautic",
+      "description": "Plataforma de automação de marketing open source para campanhas de email, landing pages e jornadas de relacionamento."
+    }
+  }
+}
