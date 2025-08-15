@@ -1,0 +1,18 @@
+{
+  "id": "langflow",
+  "name": "Langflow",
+  "description": "Interface visual para construir fluxos com IA generativa, LangChain e agentes.",
+  "version": "1.1.4",
+  "category": "IA",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["ia", "langchain", "fluxo", "agente", "chatbot"],
+  "author": "Comunidade XPanel",
+  "website": "https://langflow.org",
+  "locales": {
+    "pt-br": {
+      "name": "Langflow",
+      "description": "Interface visual para construir fluxos com IA generativa, LangChain e agentes."
+    }
+  }
+}

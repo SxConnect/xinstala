@@ -1,0 +1,55 @@
+name: Langflow
+version: 1.1.4
+description: Interface visual para construir fluxos com IA generativa, LangChain e agentes.
+author: Comunidade XPanel
+website: https://langflow.org
+categories:
+  - AI
+icon: https://raw.githubusercontent.com/SxConnect/xinstala/main/apps/free/langflow/icon.png
+docker:
+  compose:
+    version: '3.8'
+    services:
+      langflow:
+        image: langflowai/langflow:1.1.4.post1
+        user: root
+        restart: unless-stopped
+        depends_on:
+          - postgres
+        environment:
+          - LANGFLOW_DATABASE_URL=postgresql://langflow:${POSTGRES_PASSWORD}@postgres:5432/langflow
+          - LANGFLOW_CONFIG_DIR=/app/langflow
+          - LANGFLOW_SUPERUSER=${ADMIN_USER}
+          - LANGFLOW_SUPERUSER_PASSWORD=${ADMIN_PASSWORD}
+          - LANGFLOW_NEW_USER_IS_ACTIVE=true
+          - LANGFLOW_AUTO_LOGIN=false
+          - BACKEND_URL=${DOMAIN}
+        volumes:
+          - ${DATA_DIR}/langflow:/app/langflow
+        networks:
+          - ${NETWORK}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.${APP_NAME}.rule=Host(`${DOMAIN}`)"
+          - "traefik.http.routers.${APP_NAME}.entrypoints=websecure"
+          - "traefik.http.routers.${APP_NAME}.tls.certresolver=leresolver"
+          - "traefik.http.services.${APP_NAME}.loadbalancer.server.port=7860"
+          - "traefik.docker.network=${NETWORK}"
+      postgres:
+        image: postgres:16
+        restart: unless-stopped
+        environment:
+          POSTGRES_USER: langflow
+          POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+          POSTGRES_DB: langflow
+        volumes:
+          - ${DATA_DIR}/postgres:/var/lib/postgresql/data
+        networks:
+          - ${NETWORK}
+    volumes:
+      langflow_data: null
+      postgres_data: null
+networks:
+  default:
+    name: ${NETWORK}
+    external: true
