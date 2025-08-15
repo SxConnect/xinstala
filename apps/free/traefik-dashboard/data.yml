@@ -1,0 +1,46 @@
+name: Traefik Dashboard
+version: 2.10
+description: Interface gráfica para monitorar e gerenciar o Traefik (proxy reverso do XPanel).
+author: Comunidade XPanel
+website: https://traefik.io
+categories:
+  - DevOps
+icon: https://raw.githubusercontent.com/SxConnect/xinstala/main/apps/free/traefik-dashboard/icon.png
+docker:
+  compose:
+    version: '3.8'
+    services:
+      traefik-dashboard:
+        image: traefik:latest
+        container_name: ${APP_NAME}_dashboard
+        restart: unless-stopped
+        command:
+          - --entrypoints.web.address=:80
+          - --entrypoints.websecure.address=:443
+          - --api.insecure=true
+          - --api.dashboard=true
+          - --providers.docker
+          - --log.level=ERROR
+          - --certificatesresolvers.leresolver.acme.httpchallenge=true
+          - --certificatesresolvers.leresolver.acme.email=${EMAIL}
+          - --certificatesresolvers.leresolver.acme.storage=./acme.json
+          - --certificatesresolvers.leresolver.acme.httpchallenge.entrypoint=web
+        ports:
+          - "8080:8080"
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock:ro"
+          - "./acme.json:/acme.json"
+        networks:
+          - ${NETWORK}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.traefik-dashboard.rule=Host(`${DOMAIN}`)"
+          - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+          - "traefik.http.routers.traefik-dashboard.tls.certresolver=leresolver"
+          - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"
+networks:
+  default:
+    name: ${NETWORK}
+    external: true
+volumes:
+  acme: null

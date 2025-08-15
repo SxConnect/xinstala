@@ -1,0 +1,79 @@
+name: n8n
+version: 1.40.0
+description: Plataforma de automação visual para integrar apps, APIs e fluxos de trabalho.
+author: Comunidade XPanel
+website: https://n8n.io
+categories:
+  - Automação
+icon: https://raw.githubusercontent.com/SxConnect/xinstala/main/apps/free/n8n/icon.png
+docker:
+  compose:
+    version: '3.8'
+    services:
+      n8n:
+        image: docker.n8n.io/n8nio/n8n
+        restart: unless-stopped
+        environment:
+          - N8N_HOST=${DOMAIN}
+          - N8N_PORT=5678
+          - N8N_PROTOCOL=https
+          - NODE_ENV=production
+          - WEBHOOK_URL=https://${DOMAIN}
+          - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-America/Sao_Paulo}
+          - DB_TYPE=postgresdb
+          - DB_POSTGRESDB_HOST=postgres
+          - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+          - DB_POSTGRESDB_USER=${POSTGRES_USER}
+          - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+          - QUEUE_MODE=redis
+          - REDIS_HOST=redis
+          - REDIS_PORT=6379
+        volumes:
+          - ${DATA_DIR}/n8n:/root/.n8n
+          - ${DATA_DIR}/n8n-files:/files
+        depends_on:
+          - postgres
+          - redis
+        networks:
+          - ${NETWORK}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.${APP_NAME}.rule=Host(`${DOMAIN}`)"
+          - "traefik.http.routers.${APP_NAME}.entrypoints=websecure"
+          - "traefik.http.routers.${APP_NAME}.tls=true"
+          - "traefik.http.routers.${APP_NAME}.tls.certresolver=leresolver"
+          - "traefik.http.services.${APP_NAME}.loadbalancer.server.port=5678"
+          - "traefik.docker.network=${NETWORK}"
+          - "traefik.http.middlewares.${APP_NAME}-security.headers.SSLRedirect=true"
+          - "traefik.http.middlewares.${APP_NAME}-security.headers.STSSeconds=315360000"
+          - "traefik.http.middlewares.${APP_NAME}-security.headers.browserXSSFilter=true"
+          - "traefik.http.middlewares.${APP_NAME}-security.headers.contentTypeNosniff=true"
+          - "traefik.http.middlewares.${APP_NAME}-security.headers.forceSTSHeader=true"
+          - "traefik.http.middlewares.${APP_NAME}-security.headers.STSIncludeSubdomains=true"
+          - "traefik.http.middlewares.${APP_NAME}-security.headers.STSPreload=true"
+
+      postgres:
+        image: postgres:13
+        restart: unless-stopped
+        environment:
+          POSTGRES_USER: ${POSTGRES_USER}
+          POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+          POSTGRES_DB: ${POSTGRES_DB}
+        volumes:
+          - ${DATA_DIR}/postgres:/var/lib/postgresql/data
+        networks:
+          - ${NETWORK}
+
+      redis:
+        image: redis:alpine
+        restart: unless-stopped
+        networks:
+          - ${NETWORK}
+    volumes:
+      postgres_data: null
+      n8n_data: null
+      n8n_files: null
+networks:
+  default:
+    name: ${NETWORK}
+    external: true

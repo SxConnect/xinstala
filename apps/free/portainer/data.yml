@@ -1,0 +1,36 @@
+name: Portainer
+version: 2.21.0
+description: Interface visual para gerenciar containers Docker, volumes, redes e serviços.
+author: Comunidade XPanel
+website: https://portainer.io
+categories:
+  - DevOps
+icon: https://raw.githubusercontent.com/SxConnect/xinstala/main/apps/free/portainer/icon.png
+docker:
+  compose:
+    version: '3.8'
+    services:
+      portainer:
+        image: portainer/portainer-ce:latest
+        container_name: ${APP_NAME}_container
+        command: -H unix:///var/run/docker.sock
+        restart: unless-stopped
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - ${DATA_DIR}/portainer_data:/data
+        networks:
+          - ${NETWORK}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.${APP_NAME}.rule=Host(`${DOMAIN}`)"
+          - "traefik.http.routers.${APP_NAME}.entrypoints=websecure"
+          - "traefik.http.routers.${APP_NAME}.tls.certresolver=leresolver"
+          - "traefik.http.services.${APP_NAME}.loadbalancer.server.port=9000"
+          - "traefik.docker.network=${NETWORK}"
+          - "traefik.http.routers.${APP_NAME}.service=${APP_NAME}"
+    volumes:
+      portainer_data: null
+networks:
+  default:
+    name: ${NETWORK}
+    external: true

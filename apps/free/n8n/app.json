@@ -1,0 +1,18 @@
+{
+  "id": "n8n",
+  "name": "n8n",
+  "description": "Plataforma de automação visual para integrar apps, APIs e fluxos de trabalho.",
+  "version": "1.40.0",
+  "category": "Automação",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["automação", "workflow", "integração", "API", "fila"],
+  "author": "Comunidade XPanel",
+  "website": "https://n8n.io",
+  "locales": {
+    "pt-br": {
+      "name": "n8n",
+      "description": "Plataforma de automação visual para integrar apps, APIs e fluxos de trabalho."
+    }
+  }
+}

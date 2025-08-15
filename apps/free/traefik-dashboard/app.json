@@ -1,0 +1,18 @@
+{
+  "id": "traefik-dashboard",
+  "name": "Traefik Dashboard",
+  "description": "Interface gráfica para monitorar e gerenciar o Traefik (proxy reverso do XPanel).",
+  "version": "2.10",
+  "category": "DevOps",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["monitoramento", "debug", "devops", "traefik"],
+  "author": "Comunidade XPanel",
+  "website": "https://traefik.io",
+  "locales": {
+    "pt-br": {
+      "name": "Traefik Dashboard",
+      "description": "Interface gráfica para monitorar e gerenciar o Traefik (proxy reverso do XPanel)."
+    }
+  }
+}
