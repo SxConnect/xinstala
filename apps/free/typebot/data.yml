@@ -1,0 +1,126 @@
+name: Typebot
+version: 2.0.24
+description: Crie chatbots inteligentes com interface visual, sem precisar de código.
+author: Comunidade XPanel
+website: https://typebot.io
+categories:
+  - IA
+icon: https://raw.githubusercontent.com/SxConnect/xinstala/main/apps/free/typebot/icon.png
+docker:
+  compose:
+    version: '3.8'
+    services:
+      typebot-db:
+        image: postgres:13
+        restart: always
+        volumes:
+          - ${DATA_DIR}/db:/var/lib/postgresql/data
+        environment:
+          - POSTGRES_DB=${POSTGRES_DB:-typebot}
+          - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        networks:
+          - ${NETWORK}
+
+      typebot-builder:
+        image: baptistearno/typebot-builder:latest
+        restart: always
+        depends_on:
+          - typebot-db
+        environment:
+          - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@typebot-db:5432/${POSTGRES_DB:-typebot}
+          - NEXTAUTH_URL=https://${DOMAIN_BUILDER}
+          - NEXT_PUBLIC_VIEWER_URL=https://${DOMAIN_VIEWER}
+          - ENCRYPTION_SECRET=${ENCRYPTION_SECRET}
+          - ADMIN_EMAIL=${ADMIN_EMAIL}
+          - DISABLE_SIGNUP=${DISABLE_SIGNUP:-false}
+          - SMTP_AUTH_DISABLED=false
+          - SMTP_SECURE=true
+          - SMTP_HOST=${SMTP_HOST}
+          - SMTP_PORT=${SMTP_PORT}
+          - SMTP_USERNAME=${SMTP_USERNAME}
+          - SMTP_PASSWORD=${SMTP_PASSWORD}
+          - NEXT_PUBLIC_SMTP_FROM=${SMTP_FROM}
+          - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+          - S3_SECRET_KEY=${S3_SECRET_KEY}
+          - S3_BUCKET=typebot
+          - S3_ENDPOINT=${DOMAIN_MINIO}
+        networks:
+          - ${NETWORK}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.typebot-builder.rule=Host(`${DOMAIN_BUILDER}`)"
+          - "traefik.http.routers.typebot-builder.entrypoints=websecure"
+          - "traefik.http.routers.typebot-builder.tls.certresolver=leresolver"
+          - "traefik.http.services.typebot-builder.loadbalancer.server.port=3000"
+          - "traefik.docker.network=${NETWORK}"
+
+      typebot-viewer:
+        image: baptistearno/typebot-viewer:latest
+        restart: always
+        environment:
+          - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@typebot-db:5432/${POSTGRES_DB:-typebot}
+          - NEXTAUTH_URL=https://${DOMAIN_BUILDER}
+          - NEXT_PUBLIC_VIEWER_URL=https://${DOMAIN_VIEWER}
+          - ENCRYPTION_SECRET=${ENCRYPTION_SECRET}
+          - SMTP_HOST=${SMTP_HOST}
+          - NEXT_PUBLIC_SMTP_FROM=${SMTP_FROM}
+          - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+          - S3_SECRET_KEY=${S3_SECRET_KEY}
+          - S3_BUCKET=typebot
+          - S3_ENDPOINT=${DOMAIN_MINIO}
+        networks:
+          - ${NETWORK}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.typebot-viewer.rule=Host(`${DOMAIN_VIEWER}`)"
+          - "traefik.http.routers.typebot-viewer.entrypoints=websecure"
+          - "traefik.http.routers.typebot-viewer.tls.certresolver=leresolver"
+          - "traefik.http.services.typebot-viewer.loadbalancer.server.port=3000"
+          - "traefik.docker.network=${NETWORK}"
+
+      mail:
+        image: bytemark/smtp
+        restart: always
+        networks:
+          - ${NETWORK}
+
+      minio:
+        image: minio/minio
+        restart: always
+        command: server /data
+        environment:
+          MINIO_ROOT_USER: ${S3_ACCESS_KEY}
+          MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
+        volumes:
+          - ${DATA_DIR}/minio:/data
+        networks:
+          - ${NETWORK}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.minio.rule=Host(`${DOMAIN_MINIO}`)"
+          - "traefik.http.routers.minio.entrypoints=websecure"
+          - "traefik.http.routers.minio.tls.certresolver=leresolver"
+          - "traefik.http.services.minio.loadbalancer.server.port=9000"
+          - "traefik.docker.network=${NETWORK}"
+
+      createbuckets:
+        image: minio/mc
+        depends_on:
+          - minio
+        entrypoint: >
+          /bin/sh -c "
+          sleep 10;
+          /usr/bin/mc config host add minio http://minio:9000 ${S3_ACCESS_KEY} ${S3_SECRET_KEY};
+          /usr/bin/mc mb minio/typebot;
+          /usr/bin/mc anonymous set public minio/typebot/public;
+          exit 0;
+          "
+        networks:
+          - ${NETWORK}
+    volumes:
+      typebot_db_data: null
+      typebot_s3_data: null
+networks:
+  default:
+    name: ${NETWORK}
+    external: true

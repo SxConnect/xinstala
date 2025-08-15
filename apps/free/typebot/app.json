@@ -1,0 +1,18 @@
+{
+  "id": "typebot",
+  "name": "Typebot",
+  "description": "Crie chatbots inteligentes com interface visual, sem precisar de código.",
+  "version": "2.0.24",
+  "category": "IA",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["chatbot", "ia", "automação", "mensagens", "conversa"],
+  "author": "Comunidade XPanel",
+  "website": "https://typebot.io",
+  "locales": {
+    "pt-br": {
+      "name": "Typebot",
+      "description": "Crie chatbots inteligentes com interface visual, sem precisar de código."
+    }
+  }
+}
