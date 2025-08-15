@@ -1,0 +1,18 @@
+{
+  "id": "appsmith",
+  "name": "Appsmith",
+  "description": "Plataforma low-code para criar painéis internos, ferramentas e interfaces de administração.",
+  "version": "1.34.3",
+  "category": "Ferramentas de Dev",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["low-code", "painel", "admin", "ferramenta", "desenvolvimento"],
+  "author": "Comunidade XPanel",
+  "website": "https://appsmith.com",
+  "locales": {
+    "pt-br": {
+      "name": "Appsmith",
+      "description": "Plataforma low-code para criar painéis internos, ferramentas e interfaces de administração."
+    }
+  }
+}
