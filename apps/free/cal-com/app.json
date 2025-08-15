@@ -1,0 +1,18 @@
+{
+  "id": "cal-com",
+  "name": "cal.com",
+  "description": "Plataforma de agendamento de reuniões com integração a Google, Outlook e Zoom.",
+  "version": "2.14.0",
+  "category": "Utilidades",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["agendamento", "reunião", "produtividade", "calendário", "link"],
+  "author": "Comunidade XPanel",
+  "website": "https://cal.com",
+  "locales": {
+    "pt-br": {
+      "name": "cal.com",
+      "description": "Plataforma de agendamento de reuniões com integração a Google, Outlook e Zoom."
+    }
+  }
+}

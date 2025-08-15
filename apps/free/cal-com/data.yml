@@ -1,0 +1,63 @@
+name: cal.com
+version: 2.14.0
+description: Plataforma de agendamento de reuniões com integração a Google, Outlook e Zoom.
+author: Comunidade XPanel
+website: https://cal.com
+categories:
+  - Tool
+icon: https://raw.githubusercontent.com/SxConnect/xinstala/main/apps/free/cal-com/icon.png
+docker:
+  compose:
+    version: '3.7'
+    services:
+      cal:
+        image: calcom/cal.com:latest
+        hostname: cal
+        restart: unless-stopped
+        environment:
+          - NEXT_PUBLIC_LICENSE_CONSENT=agree
+          - LICENSE=agree
+          - NODE_ENV=production
+          - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+          - CALENDSO_ENCRYPTION_KEY=${CALENDSO_ENCRYPTION_KEY}
+          - NEXT_PUBLIC_WEBAPP_URL=https://${DOMAIN}
+          - BASE_URL=https://${DOMAIN}
+          - NEXTAUTH_URL=https://${DOMAIN}
+          - NEXT_PUBLIC_CONSOLE_URL=https://${DOMAIN}
+          - NEXT_PUBLIC_APP_URL=https://${DOMAIN}
+          - NEXT_PUBLIC_WEBSITE_URL=https://${DOMAIN}
+          - WEB_APP=https://${DOMAIN}
+          - POSTGRES_DB=${POSTGRES_DB}
+          - DATABASE_HOST=postgres
+          - POSTGRES_PORT=5432
+          - POSTGRES_USER=${POSTGRES_USER}
+          - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+          - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+        networks:
+          - ${NETWORK}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.${APP_NAME}.rule=Host(`${DOMAIN}`)"
+          - "traefik.http.routers.${APP_NAME}.entrypoints=websecure"
+          - "traefik.http.routers.${APP_NAME}.priority=1"
+          - "traefik.http.routers.${APP_NAME}.tls.certresolver=leresolver"
+          - "traefik.http.services.${APP_NAME}.loadbalancer.server.port=3000"
+          - "traefik.docker.network=${NETWORK}"
+          - "traefik.http.services.${APP_NAME}.loadbalancer.passHostHeader=true"
+      postgres:
+        image: postgres:15
+        restart: unless-stopped
+        environment:
+          POSTGRES_USER: ${POSTGRES_USER}
+          POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+          POSTGRES_DB: ${POSTGRES_DB}
+        volumes:
+          - ${DATA_DIR}/postgres:/var/lib/postgresql/data
+        networks:
+          - ${NETWORK}
+    volumes:
+      postgres_data: null
+networks:
+  default:
+    name: ${NETWORK}
+    external: true
