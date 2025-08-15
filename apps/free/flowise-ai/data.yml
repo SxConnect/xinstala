@@ -1,0 +1,41 @@
+name: Flowise AI
+version: 2.7.0
+description: Plataforma visual para criar fluxos de IA com LangChain, agentes e RAG.
+author: Comunidade XPanel
+website: https://flowise.ai
+categories:
+  - AI
+icon: https://raw.githubusercontent.com/SxConnect/xinstala/main/apps/free/flowise-ai/icon.png
+docker:
+  compose:
+    version: '3.1'
+    services:
+      flowise:
+        image: elestio/flowiseai:latest
+        restart: always
+        environment:
+          - PORT=3000
+          - FLOWISE_USERNAME=${FLOWISE_USERNAME}
+          - FLOWISE_PASSWORD=${FLOWISE_PASSWORD}
+          - DATABASE_PATH=/root/.flowise
+          - APIKEY_PATH=/root/.flowise
+          - LOG_PATH=/root/.flowise/logs
+          - SECRETKEY_PATH=/root/.flowise
+        volumes:
+          - ${DATA_DIR}/flowise:/root/.flowise
+        networks:
+          - ${NETWORK}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.${APP_NAME}.rule=Host(`${DOMAIN}`)"
+          - "traefik.http.routers.${APP_NAME}.entrypoints=websecure"
+          - "traefik.http.routers.${APP_NAME}.tls.certresolver=leresolver"
+          - "traefik.http.services.${APP_NAME}.loadbalancer.server.port=3000"
+          - "traefik.docker.network=${NETWORK}"
+          - "traefik.http.routers.${APP_NAME}.service=${APP_NAME}"
+    volumes:
+      flowise_data: null
+networks:
+  default:
+    name: ${NETWORK}
+    external: true

@@ -1,0 +1,18 @@
+{
+  "id": "flowise-ai",
+  "name": "Flowise AI",
+  "description": "Plataforma visual para criar fluxos de IA com LangChain, agentes e RAG.",
+  "version": "2.7.0",
+  "category": "IA",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["ia", "langchain", "agente", "fluxo", "chatbot"],
+  "author": "Comunidade XPanel",
+  "website": "https://flowise.ai",
+  "locales": {
+    "pt-br": {
+      "name": "Flowise AI",
+      "description": "Plataforma visual para criar fluxos de IA com LangChain, agentes e RAG."
+    }
+  }
+}
