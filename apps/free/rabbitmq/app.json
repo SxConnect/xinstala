@@ -1,0 +1,18 @@
+{
+  "id": "rabbitmq",
+  "name": "RabbitMQ",
+  "description": "Broker de mensagens para filas, integração entre serviços e arquiteturas distribuídas.",
+  "version": "3.13",
+  "category": "DevOps",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["fila", "mensagens", "broker", "integração", "microserviços"],
+  "author": "Comunidade XPanel",
+  "website": "https://www.rabbitmq.com",
+  "locales": {
+    "pt-br": {
+      "name": "RabbitMQ",
+      "description": "Broker de mensagens para filas, integração entre serviços e arquiteturas distribuídas."
+    }
+  }
+}
