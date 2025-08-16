@@ -1,0 +1,73 @@
+name: Ollama
+version: latest
+description: Execute modelos de IA localmente, como Llama 3, Gemma, Phi e Mistral, sem depender de API.
+author: Comunidade XPanel
+website: https://ollama.com
+categories:
+  - AI
+icon: https://raw.githubusercontent.com/SxConnect/xinstala/main/apps/free/ollama/icon.png
+docker:
+  compose:
+    version: '3.8'
+    services:
+      ollama:
+        image: ollama/ollama:latest
+        restart: unless-stopped
+        volumes:
+          - ${DATA_DIR}/ollama:/root/.ollama
+        networks:
+          - ${NETWORK}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.${APP_NAME}.rule=Host(`${DOMAIN}`)"
+          - "traefik.http.routers.${APP_NAME}.entrypoints=web"
+          - "traefik.http.services.${APP_NAME}.loadbalancer.server.port=11434"
+          - "traefik.http.routers.${APP_NAME}-secure.rule=Host(`${DOMAIN}`)"
+          - "traefik.http.routers.${APP_NAME}-secure.entrypoints=websecure"
+          - "traefik.http.routers.${APP_NAME}-secure.tls.certresolver=leresolver"
+          - "traefik.docker.network=${NETWORK}"
+        healthcheck:
+          test: ollama list || exit 1
+          interval: 10s
+          timeout: 30s
+          retries: 5
+          start_period: 10s
+
+      ollama-webui:
+        image: ghcr.io/ollama-webui/ollama-webui:main
+        restart: unless-stopped
+        environment:
+          - OLLAMA_API_BASE_URL=http://ollama:11434/api
+        depends_on:
+          - ollama
+        volumes:
+          - ${DATA_DIR}/webui:/app/backend/data
+        networks:
+          - ${NETWORK}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.${APP_NAME}-webui.rule=Host(`${DOMAIN_WEBUI}`)"
+          - "traefik.http.routers.${APP_NAME}-webui.entrypoints=web"
+          - "traefik.http.services.${APP_NAME}-webui.loadbalancer.server.port=8080"
+          - "traefik.http.routers.${APP_NAME}-webui-secure.rule=Host(`${DOMAIN_WEBUI}`)"
+          - "traefik.http.routers.${APP_NAME}-webui-secure.entrypoints=websecure"
+          - "traefik.http.routers.${APP_NAME}-webui-secure.tls.certresolver=leresolver"
+          - "traefik.docker.network=${NETWORK}"
+
+      ollama-models-pull:
+        image: curlimages/curl:8.6.0
+        restart: "no"
+        command: >-
+          http://ollama:11434/api/pull -d '{"name": "mistral"}'
+        depends_on:
+          ollama:
+            condition: service_healthy
+        networks:
+          - ${NETWORK}
+    volumes:
+      ollama_data: null
+      webui_data: null
+networks:
+  default:
+    name: ${NETWORK}
+    external: true

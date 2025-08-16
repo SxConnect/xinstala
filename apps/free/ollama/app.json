@@ -1,0 +1,18 @@
+{
+  "id": "ollama",
+  "name": "Ollama",
+  "description": "Execute modelos de IA localmente, como Llama 3, Gemma, Phi e Mistral, sem depender de API.",
+  "version": "latest",
+  "category": "IA",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["ia", "llm", "modelo local", "chat", "gemma", "llama3"],
+  "author": "Comunidade XPanel",
+  "website": "https://ollama.com",
+  "locales": {
+    "pt-br": {
+      "name": "Ollama",
+      "description": "Execute modelos de IA localmente, como Llama 3, Gemma, Phi e Mistral, sem depender de API."
+    }
+  }
+}
