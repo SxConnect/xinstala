@@ -1,0 +1,18 @@
+{
+  "id": "nocodb",
+  "name": "NocoDB",
+  "description": "Planilha inteligente que transforma seu banco de dados em uma interface tipo Airtable.",
+  "version": "0.270.0",
+  "category": "Ferramentas de Dev",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["planilha", "airtable", "banco de dados", "low-code", "noco"],
+  "author": "Comunidade XPanel",
+  "website": "https://nocodb.com",
+  "locales": {
+    "pt-br": {
+      "name": "NocoDB",
+      "description": "Planilha inteligente que transforma seu banco de dados em uma interface tipo Airtable."
+    }
+  }
+}

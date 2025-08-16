@@ -1,0 +1,44 @@
+name: NocoDB
+version: 0.270.0
+description: Planilha inteligente que transforma seu banco de dados em uma interface tipo Airtable.
+author: Comunidade XPanel
+website: https://nocodb.com
+categories:
+  - DevTool
+icon: https://raw.githubusercontent.com/SxConnect/xinstala/main/apps/free/nocodb/icon.png
+docker:
+  compose:
+    version: '3.8'
+    services:
+      nocodb:
+        image: nocodb/nocodb:latest
+        restart: unless-stopped
+        environment:
+          - NC_DB=pg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5435/${POSTGRES_DB}
+          - NC_BACKEND_URL=https://${DOMAIN}
+        networks:
+          - ${NETWORK}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.${APP_NAME}.rule=Host(`${DOMAIN}`)"
+          - "traefik.http.routers.${APP_NAME}.entrypoints=websecure"
+          - "traefik.http.routers.${APP_NAME}.tls.certresolver=leresolver"
+          - "traefik.http.services.${APP_NAME}.loadbalancer.server.port=8080"
+          - "traefik.docker.network=${NETWORK}"
+      postgres:
+        image: postgres:11.2-alpine
+        restart: unless-stopped
+        environment:
+          - POSTGRES_DB=${POSTGRES_DB}
+          - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+          - POSTGRES_USER=${POSTGRES_USER}
+        volumes:
+          - ${DATA_DIR}/postgres:/var/lib/postgresql/data
+        networks:
+          - ${NETWORK}
+    volumes:
+      postgres_data: null
+networks:
+  default:
+    name: ${NETWORK}
+    external: true
