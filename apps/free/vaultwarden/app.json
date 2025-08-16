@@ -1,0 +1,18 @@
+{
+  "id": "vaultwarden",
+  "name": "Vaultwarden",
+  "description": "Servidor leve do Bitwarden para auto-hospedagem de senhas e autenticação de dois fatores.",
+  "version": "1.30.0",
+  "category": "Segurança",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["senha", "bitwarden", "autenticação", "2fa", "segurança"],
+  "author": "Comunidade XPanel",
+  "website": "https://github.com/dani-garcia/vaultwarden",
+  "locales": {
+    "pt-br": {
+      "name": "Vaultwarden",
+      "description": "Servidor leve do Bitwarden para auto-hospedagem de senhas e autenticação de dois fatores."
+    }
+  }
+}

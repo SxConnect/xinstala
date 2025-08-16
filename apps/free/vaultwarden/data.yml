@@ -1,0 +1,50 @@
+name: Vaultwarden
+version: 1.30.0
+description: Servidor leve do Bitwarden para auto-hospedagem de senhas e autenticação de dois fatores.
+author: Comunidade XPanel
+website: https://github.com/dani-garcia/vaultwarden
+categories:
+  - Security
+icon: https://raw.githubusercontent.com/SxConnect/xinstala/main/apps/free/vaultwarden/icon.png
+docker:
+  compose:
+    version: '3.8'
+    services:
+      vaultwarden:
+        image: vaultwarden/server:latest
+        restart: unless-stopped
+        environment:
+          - WEBSITE_HOST=${DOMAIN}
+          - ROCKET_PORT=80
+          - ROCKET_TLS={certs="/ssl/fullchain.pem",key="/ssl/privkey.pem"}
+          - SIGNUPS_ALLOWED=false
+          - DISABLE_ICON_DOWNLOAD=true
+          - SHOW_PASSWORD_HINT=true
+          - DOMAIN=https://${DOMAIN}
+          - ADMIN_TOKEN=${ADMIN_TOKEN}
+          - SMTP_HOST=${SMTP_HOST}
+          - SMTP_FROM=${SMTP_FROM}
+          - SMTP_PORT=${SMTP_PORT}
+          - SMTP_USERNAME=${SMTP_USERNAME}
+          - SMTP_PASSWORD=${SMTP_PASSWORD}
+          - SMTP_SECURITY=starttls
+          - LOG_LEVEL=info
+        volumes:
+          - ${DATA_DIR}/vaultwarden:/data
+          - ${SSL_CERTS_DIR}:/ssl:ro
+        networks:
+          - ${NETWORK}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.${APP_NAME}.rule=Host(`${DOMAIN}`)"
+          - "traefik.http.routers.${APP_NAME}.entrypoints=websecure"
+          - "traefik.http.routers.${APP_NAME}.tls.certresolver=leresolver"
+          - "traefik.http.services.${APP_NAME}.loadbalancer.server.port=80"
+          - "traefik.docker.network=${NETWORK}"
+          - "traefik.http.routers.${APP_NAME}.service=${APP_NAME}"
+    volumes:
+      data: null
+networks:
+  default:
+    name: ${NETWORK}
+    external: true
