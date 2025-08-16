@@ -1,0 +1,18 @@
+{
+  "id": "hasura",
+  "name": "Hasura",
+  "description": "Plataforma GraphQL instantânea para transformar bancos de dados em APIs com tempo real.",
+  "version": "2.35.0",
+  "category": "Ferramentas de Dev",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["graphql", "api", "banco de dados", "postgresql", "tempo real"],
+  "author": "Comunidade XPanel",
+  "website": "https://hasura.io",
+  "locales": {
+    "pt-br": {
+      "name": "Hasura",
+      "description": "Plataforma GraphQL instantânea para transformar bancos de dados em APIs com tempo real."
+    }
+  }
+}
