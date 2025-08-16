@@ -1,0 +1,36 @@
+name: Baserow
+version: 1.24.0
+description: Plataforma de planilhas inteligentes auto-hospedada, semelhante ao Airtable.
+author: Comunidade XPanel
+website: https://baserow.io
+categories:
+  - DevTool
+icon: https://raw.githubusercontent.com/SxConnect/xinstala/main/apps/free/baserow/icon.png
+docker:
+  compose:
+    version: '3.8'
+    services:
+      baserow:
+        image: baserow/baserow:latest
+        container_name: ${APP_NAME}_container
+        restart: unless-stopped
+        environment:
+          - BASEROW_PUBLIC_URL=https://${DOMAIN}
+        volumes:
+          - ${DATA_DIR}/baserow:/baserow/data
+        networks:
+          - ${NETWORK}
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.${APP_NAME}.rule=Host(`${DOMAIN}`)"
+          - "traefik.http.routers.${APP_NAME}.entrypoints=websecure"
+          - "traefik.http.routers.${APP_NAME}.tls.certresolver=leresolver"
+          - "traefik.http.services.${APP_NAME}.loadbalancer.server.port=80"
+          - "traefik.docker.network=${NETWORK}"
+          - "traefik.http.routers.${APP_NAME}.service=${APP_NAME}"
+    volumes:
+      baserow_data: null
+networks:
+  default:
+    name: ${NETWORK}
+    external: true

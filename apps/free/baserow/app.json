@@ -1,0 +1,18 @@
+{
+  "id": "baserow",
+  "name": "Baserow",
+  "description": "Plataforma de planilhas inteligentes auto-hospedada, semelhante ao Airtable.",
+  "version": "1.24.0",
+  "category": "Ferramentas de Dev",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["planilha", "airtable", "colaboração", "banco de dados", "no-code"],
+  "author": "Comunidade XPanel",
+  "website": "https://baserow.io",
+  "locales": {
+    "pt-br": {
+      "name": "Baserow",
+      "description": "Plataforma de planilhas inteligentes auto-hospedada, semelhante ao Airtable."
+    }
+  }
+}
