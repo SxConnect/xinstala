@@ -1,0 +1,46 @@
+name: MinIO
+version: RELEASE.2024-03-26T22-10-45Z
+description: Armazenamento de objetos S3 compatível para backup, arquivos e integração com apps de IA.
+author: Comunidade XPanel
+website: https://min.io
+categories:
+  - Storage
+icon: https://raw.githubusercontent.com/SxConnect/xinstala/main/apps/free/minio/icon.png
+docker:
+  compose:
+    version: '3.8'
+    services:
+      minio:
+        image: quay.io/minio/minio:RELEASE.2024-03-26T22-10-45Z
+        restart: always
+        command: server /data --console-address ":9001"
+        networks:
+          - ${NETWORK}
+        volumes:
+          - ${DATA_DIR}/minio:/data
+        environment:
+          - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+          - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+          - MINIO_BROWSER_REDIRECT_URL=https://${DOMAIN_STORAGE}
+          - MINIO_SERVER_URL=https://${DOMAIN_S3}
+          - MINIO_VOLUMES=/data
+          - CONSOLE_MINIO_SERVER=https://${DOMAIN_S3}
+          - MINIO_OPTS=--console-address=":9001"
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.minio_public.rule=Host(`${DOMAIN_S3}`)"
+          - "traefik.http.routers.minio_public.entrypoints=websecure"
+          - "traefik.http.routers.minio_public.tls.certresolver=leresolver"
+          - "traefik.http.services.minio_public.loadbalancer.server.port=9000"
+          - "traefik.docker.network=${NETWORK}"
+          - "traefik.http.routers.minio_console.rule=Host(`${DOMAIN_STORAGE}`)"
+          - "traefik.http.routers.minio_console.entrypoints=websecure"
+          - "traefik.http.routers.minio_console.tls.certresolver=leresolver"
+          - "traefik.http.services.minio_console.loadbalancer.server.port=9001"
+          - "traefik.docker.network=${NETWORK}"
+    volumes:
+      minio_data: null
+networks:
+  default:
+    name: ${NETWORK}
+    external: true

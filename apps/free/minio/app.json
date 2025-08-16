@@ -1,0 +1,18 @@
+{
+  "id": "minio",
+  "name": "MinIO",
+  "description": "Armazenamento de objetos S3 compatível para backup, arquivos e integração com apps de IA.",
+  "version": "RELEASE.2024-03-26T22-10-45Z",
+  "category": "Armazenamento",
+  "price_brl": 0,
+  "license_required": false,
+  "tags": ["s3", "armazenamento", "backup", "objeto", "nube"],
+  "author": "Comunidade XPanel",
+  "website": "https://min.io",
+  "locales": {
+    "pt-br": {
+      "name": "MinIO",
+      "description": "Armazenamento de objetos S3 compatível para backup, arquivos e integração com apps de IA."
+    }
+  }
+}
